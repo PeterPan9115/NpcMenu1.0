@@ -1,0 +1,14 @@
+name: NpcMenu
+version: 1.0.0
+main: dev.npcmenu.NpcMenu
+api-version: "26.1"
+description: NPCs (Shop, Teleporter, Befehle, ...) per Menue erstellen
+commands:
+  npc:
+    description: Oeffnet das NPC-Menue
+    usage: /npc
+    permission: npcmenu.admin
+permissions:
+  npcmenu.admin:
+    description: NPCs erstellen und bearbeiten
+    default: op
