@@ -19,13 +19,18 @@ public final class NpcMenu extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new NpcListener(this), this);
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
+        getServer().getScheduler().runTaskTimer(this, () -> manager.saveUsage(), 6000L, 6000L);
+
         var cmd = getCommand("npc");
         if (cmd != null) cmd.setExecutor(new NpcCommand(this));
     }
 
     @Override
     public void onDisable() {
-        if (manager != null) manager.save();
+        if (manager != null) {
+            manager.save();
+            manager.saveUsage();
+        }
     }
 
     public NpcManager manager() { return manager; }

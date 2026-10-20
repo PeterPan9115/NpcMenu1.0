@@ -17,35 +17,52 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Editor fuer die Tausche. Die Anordnung (Layout) ist waehlbar und entspricht
- * genau dem, was die Spieler spaeter im Shop sehen.
+ * Editor fuer die Tausche (mehrere Seiten, waehlbares Layout).
  * Items werden nur KOPIERT, du verlierst nichts aus deinem Inventar.
  */
 public final class TraderEditor extends Gui {
 
     private final NpcData d;
     private final ShopLayout layout;
+    private final int page;
     private final Set<Integer> editable = new HashSet<>();
 
     public TraderEditor(NpcMenu plugin, NpcData d) {
+        this(plugin, d, 0);
+    }
+
+    public TraderEditor(NpcMenu plugin, NpcData d, int page) {
         super(plugin);
         this.d = d;
         this.layout = d.layout;
-        init(layout.size(), "<dark_gray>Shop-Editor");
+        this.page = page;
+        init(layout.size(), "<dark_gray>Shop-Editor - Seite " + (page + 1) + "/" + NpcData.MAX_PAGES);
         fill(Util.filler());
 
-        for (int i = 0; i < NpcData.TRADES; i++) {
-            int in = layout.in(i);
-            int out = layout.out(i);
+        for (int j = 0; j < NpcData.PER_PAGE; j++) {
+            int i = page * NpcData.PER_PAGE + j;
+            int in = layout.in(j);
+            int out = layout.out(j);
             editable.add(in);
             editable.add(out);
             inv.setItem(in, d.inputs[i] == null ? null : d.inputs[i].clone());
             inv.setItem(out, d.outputs[i] == null ? null : d.outputs[i].clone());
-            if (layout.arrow(i) >= 0) {
-                inv.setItem(layout.arrow(i), Util.item(Material.ARROW, "<gray>Tausch " + (i + 1)));
+            if (layout.arrow(j) >= 0) {
+                inv.setItem(layout.arrow(j), Util.item(Material.ARROW, "<gray>Tausch " + (i + 1)));
             }
         }
 
+        if (page > 0) {
+            inv.setItem(layout.prevSlot(), Util.item(Material.ARROW, "<yellow>Vorherige Seite",
+                    "<gray>Seite " + page));
+        }
+        if (page < NpcData.MAX_PAGES - 1) {
+            inv.setItem(layout.nextSlot(), Util.item(Material.ARROW, "<yellow>Naechste Seite",
+                    "<gray>Seite " + (page + 2)));
+        }
+        inv.setItem(layout.limitSlot(), Util.item(Material.CLOCK, "<aqua>Limits / Cooldowns",
+                "<gray>Pro Tausch einstellbar,", "<gray>z.B. max. 5x pro Tag.", "",
+                "<yellow>Klicken zum Oeffnen"));
         inv.setItem(layout.infoSlot(), Util.item(Material.PAPER, "<yellow>Anleitung",
                 "<gray>Item aufnehmen und auf einen leeren",
                 "<gray>Slot klicken = Item hinterlegen (Kopie).",
@@ -57,16 +74,15 @@ public final class TraderEditor extends Gui {
                 "<gray>Ware = was der Spieler bekommt",
                 "<gray>Beide Slots eines Tauschs muessen belegt sein."));
         inv.setItem(layout.layoutSlot(), Util.item(Material.COMPARATOR, "<aqua>Layout",
-                "<white>" + layout.label,
-                "",
-                "<yellow>Klicken: Anordnung wechseln"));
+                "<white>" + layout.label, "", "<yellow>Klicken: Anordnung wechseln"));
         inv.setItem(layout.doneSlot(), Util.item(Material.LIME_DYE, "<green><bold>Fertig"));
     }
 
     private void saveToData() {
-        for (int i = 0; i < NpcData.TRADES; i++) {
-            ItemStack in = inv.getItem(layout.in(i));
-            ItemStack out = inv.getItem(layout.out(i));
+        for (int j = 0; j < NpcData.PER_PAGE; j++) {
+            int i = page * NpcData.PER_PAGE + j;
+            ItemStack in = inv.getItem(layout.in(j));
+            ItemStack out = inv.getItem(layout.out(j));
             d.inputs[i] = in == null ? null : in.clone();
             d.outputs[i] = out == null ? null : out.clone();
         }
@@ -93,7 +109,22 @@ public final class TraderEditor extends Gui {
             saveToData();
             d.layout = layout.next();
             plugin.manager().refresh(d);
-            new TraderEditor(plugin, d).open(p);
+            new TraderEditor(plugin, d, page).open(p);
+            return;
+        }
+        if (slot == layout.prevSlot() && page > 0) {
+            saveToData();
+            new TraderEditor(plugin, d, page - 1).open(p);
+            return;
+        }
+        if (slot == layout.nextSlot() && page < NpcData.MAX_PAGES - 1) {
+            saveToData();
+            new TraderEditor(plugin, d, page + 1).open(p);
+            return;
+        }
+        if (slot == layout.limitSlot()) {
+            saveToData();
+            new LimitMenu(plugin, d, page).open(p);
             return;
         }
         if (!editable.contains(slot)) return;

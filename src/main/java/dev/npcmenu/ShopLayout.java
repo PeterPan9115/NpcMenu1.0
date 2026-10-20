@@ -25,7 +25,7 @@ public enum ShopLayout {
         return (i / 3) * 9 + (i % 3) * 3;
     }
 
-    /** Slot des Preis-Items fuer Tausch i. */
+    /** Slot des Preis-Items fuer Tausch i (0-8 auf der Seite). */
     public int in(int i) {
         return switch (this) {
             case ROWS_PRICE_TOP -> i;
@@ -35,7 +35,7 @@ public enum ShopLayout {
         };
     }
 
-    /** Slot der Ware fuer Tausch i. */
+    /** Slot der Ware fuer Tausch i (0-8 auf der Seite). */
     public int out(int i) {
         return switch (this) {
             case ROWS_PRICE_TOP -> 9 + i;
@@ -50,6 +50,10 @@ public enum ShopLayout {
         return pairs() ? base(i) + 1 : -1;
     }
 
+    // Untere Reihe: Steuerung
+    public int prevSlot() { return size() - 9; }
+    public int nextSlot() { return size() - 8; }
+    public int limitSlot() { return size() - 6; }
     public int infoSlot() { return size() - 5; }
     public int layoutSlot() { return size() - 3; }
     public int doneSlot() { return size() - 1; }

@@ -58,6 +58,10 @@ public final class EditMenu extends Gui {
         set(13, Util.item(Material.COMPARATOR, "<aqua>Einstellungen",
                 configLore()), e -> openConfig((Player) e.getWhoClicked()));
 
+        set(15, Util.item(Material.IRON_CHESTPLATE, "<aqua>Ausruestung",
+                "<gray>Ruestung und Items in den Haenden", "", "<yellow>Klicken zum Oeffnen"),
+                e -> new EquipmentMenu(plugin, d).open((Player) e.getWhoClicked()));
+
         if (!d.spawned()) {
             set(16, Util.item(Material.LIME_DYE, "<green><bold>NPC spawnen",
                     "<gray>Spawnt den NPC an deiner Position."), e -> {

@@ -64,6 +64,26 @@ public final class Util {
         to.sendMessage(parse("<dark_gray>[<gold>NPC<dark_gray>] " + mini));
     }
 
+    public static String duration(long ms) {
+        long sec = ms / 1000;
+        long days = sec / 86400;
+        sec %= 86400;
+        long hours = sec / 3600;
+        sec %= 3600;
+        long mins = sec / 60;
+        sec %= 60;
+        StringBuilder sb = new StringBuilder();
+        if (days > 0) sb.append(days).append("d ");
+        if (hours > 0) sb.append(hours).append("h ");
+        if (mins > 0) sb.append(mins).append("min ");
+        if (sb.length() == 0) sb.append(sec).append("s");
+        return sb.toString().trim();
+    }
+
+    public static String describeItem(ItemStack it) {
+        return it.getAmount() + "x " + it.getType().name().toLowerCase().replace('_', ' ');
+    }
+
     public static String newId() {
         return UUID.randomUUID().toString().substring(0, 8);
     }

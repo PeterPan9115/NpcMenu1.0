@@ -30,6 +30,11 @@ public abstract class Gui implements InventoryHolder {
         inv = Bukkit.createInventory(this, size, Util.parse(title));
     }
 
+    protected void clear() {
+        inv.clear();
+        actions.clear();
+    }
+
     protected void fill(ItemStack item) {
         for (int i = 0; i < inv.getSize(); i++) inv.setItem(i, item);
     }
