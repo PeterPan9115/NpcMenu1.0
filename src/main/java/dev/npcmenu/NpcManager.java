@@ -105,6 +105,18 @@ public final class NpcManager {
         save();
     }
 
+    /** Teleportiert einen Spieler zum NPC. */
+    public void teleportTo(org.bukkit.entity.Player p, NpcData d) {
+        Mannequin m = find(d);
+        Location loc = m != null ? m.getLocation() : d.location;
+        if (loc == null || loc.getWorld() == null) {
+            Util.msg(p, "<red>Dieser NPC ist noch nicht gespawnt.");
+            return;
+        }
+        p.teleportAsync(loc.clone());
+        Util.msg(p, "<green>Zum NPC teleportiert.");
+    }
+
     public void remove(NpcData d) {
         Mannequin m = find(d);
         if (m != null) m.remove();

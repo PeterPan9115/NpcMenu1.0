@@ -2,6 +2,7 @@ package dev.npcmenu.gui;
 
 import dev.npcmenu.NpcData;
 import dev.npcmenu.NpcMenu;
+import dev.npcmenu.ShopLayout;
 import dev.npcmenu.Util;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -16,7 +17,8 @@ public final class ShopMenu extends Gui {
     public ShopMenu(NpcMenu plugin, NpcData d) {
         super(plugin);
         this.d = d;
-        init(27, d.name);
+        ShopLayout layout = d.layout;
+        init(layout.size(), d.name);
         fill(Util.filler());
 
         boolean any = false;
@@ -26,8 +28,14 @@ public final class ShopMenu extends Gui {
             if (in == null || out == null) continue;
             any = true;
             final int idx = i;
-            set(i, Util.withLore(in, "<red>Du gibst:", "<gray>" + in.getAmount() + "x"), e -> trade((Player) e.getWhoClicked(), idx));
-            set(i + 9, Util.withLore(out, "<green>Du bekommst:", "<yellow>Klicken zum Tauschen"), e -> trade((Player) e.getWhoClicked(), idx));
+            set(layout.in(i), Util.withLore(in, "<red>Du gibst:", "<gray>" + in.getAmount() + "x"),
+                    e -> trade((Player) e.getWhoClicked(), idx));
+            set(layout.out(i), Util.withLore(out, "<green>Du bekommst:", "<yellow>Klicken zum Tauschen"),
+                    e -> trade((Player) e.getWhoClicked(), idx));
+            if (layout.arrow(i) >= 0) {
+                set(layout.arrow(i), Util.item(Material.ARROW, "<yellow>Tauschen"),
+                        e -> trade((Player) e.getWhoClicked(), idx));
+            }
         }
         if (!any) {
             set(13, Util.item(Material.BARRIER, "<red>Dieser Shop ist leer."), null);

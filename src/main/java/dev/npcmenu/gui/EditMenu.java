@@ -79,6 +79,9 @@ public final class EditMenu extends Gui {
                 plugin.manager().move(d, loc);
                 Util.msg(p, "<green>NPC verschoben.");
             });
+            set(14, Util.item(Material.ENDER_PEARL, "<light_purple>Zum NPC teleportieren",
+                    "<gray>Teleportiert dich zu diesem NPC."),
+                    e -> plugin.manager().teleportTo((Player) e.getWhoClicked(), d));
             set(22, Util.item(Material.TNT, "<red><bold>NPC loeschen",
                     "<gray>Zum Bestaetigen: <white>Shift + Klick"), e -> {
                 if (!e.isShiftClick()) {

@@ -23,6 +23,8 @@ public class NpcData {
     public final ItemStack[] inputs = new ItemStack[TRADES];
     public final ItemStack[] outputs = new ItemStack[TRADES];
 
+    public ShopLayout layout = ShopLayout.ROWS_PRICE_TOP;
+
     // Teleporter
     public Location tpTarget;
 
@@ -54,6 +56,7 @@ public class NpcData {
             s.set("trades." + i + ".in", inputs[i]);
             s.set("trades." + i + ".out", outputs[i]);
         }
+        s.set("layout", layout.name());
         s.set("teleport", tpTarget);
         s.set("command", command);
         s.set("console", asConsole);
@@ -75,6 +78,10 @@ public class NpcData {
         for (int i = 0; i < TRADES; i++) {
             d.inputs[i] = s.getItemStack("trades." + i + ".in");
             d.outputs[i] = s.getItemStack("trades." + i + ".out");
+        }
+        try {
+            d.layout = ShopLayout.valueOf(s.getString("layout", "ROWS_PRICE_TOP"));
+        } catch (IllegalArgumentException ignored) {
         }
         d.tpTarget = s.getLocation("teleport");
         d.command = s.getString("command", "");

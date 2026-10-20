@@ -2,6 +2,7 @@ package dev.npcmenu.gui;
 
 import dev.npcmenu.NpcData;
 import dev.npcmenu.NpcMenu;
+import dev.npcmenu.ShopLayout;
 import dev.npcmenu.Util;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,37 +13,63 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * Obere Reihe (Slot 0-8):  Das gibt der Spieler (Preis)
- * Mittlere Reihe (9-17):   Das bekommt der Spieler (Ware)
- *
- * Die Items werden nur KOPIERT, du verlierst nichts aus deinem Inventar.
+ * Editor fuer die Tausche. Die Anordnung (Layout) ist waehlbar und entspricht
+ * genau dem, was die Spieler spaeter im Shop sehen.
+ * Items werden nur KOPIERT, du verlierst nichts aus deinem Inventar.
  */
 public final class TraderEditor extends Gui {
 
     private final NpcData d;
+    private final ShopLayout layout;
+    private final Set<Integer> editable = new HashSet<>();
 
     public TraderEditor(NpcMenu plugin, NpcData d) {
         super(plugin);
         this.d = d;
-        init(27, "<dark_gray>Shop: Oben = Preis, Mitte = Ware");
+        this.layout = d.layout;
+        init(layout.size(), "<dark_gray>Shop-Editor");
+        fill(Util.filler());
 
         for (int i = 0; i < NpcData.TRADES; i++) {
-            inv.setItem(i, d.inputs[i] == null ? null : d.inputs[i].clone());
-            inv.setItem(i + 9, d.outputs[i] == null ? null : d.outputs[i].clone());
+            int in = layout.in(i);
+            int out = layout.out(i);
+            editable.add(in);
+            editable.add(out);
+            inv.setItem(in, d.inputs[i] == null ? null : d.inputs[i].clone());
+            inv.setItem(out, d.outputs[i] == null ? null : d.outputs[i].clone());
+            if (layout.arrow(i) >= 0) {
+                inv.setItem(layout.arrow(i), Util.item(Material.ARROW, "<gray>Tausch " + (i + 1)));
+            }
         }
-        for (int i = 18; i < 27; i++) inv.setItem(i, Util.filler());
 
-        inv.setItem(22, Util.item(Material.PAPER, "<yellow>Anleitung",
-                "<gray>Oben: <white>Das gibt der Spieler",
-                "<gray>Mitte: <white>Das bekommt der Spieler",
-                "",
-                "<gray>Item aufnehmen und auf einen Slot",
-                "<gray>klicken = Item hinterlegen (Kopie).",
+        inv.setItem(layout.infoSlot(), Util.item(Material.PAPER, "<yellow>Anleitung",
+                "<gray>Item aufnehmen und auf einen leeren",
+                "<gray>Slot klicken = Item hinterlegen (Kopie).",
                 "<gray>Linksklick auf Item: <white>Anzahl +1",
                 "<gray>Rechtsklick auf Item: <white>Anzahl -1",
-                "<gray>Shift-/Mittelklick: <white>leeren"));
-        inv.setItem(26, Util.item(Material.LIME_DYE, "<green><bold>Fertig"));
+                "<gray>Shift-/Mittelklick: <white>leeren",
+                "",
+                "<gray>Preis = was der Spieler gibt",
+                "<gray>Ware = was der Spieler bekommt",
+                "<gray>Beide Slots eines Tauschs muessen belegt sein."));
+        inv.setItem(layout.layoutSlot(), Util.item(Material.COMPARATOR, "<aqua>Layout",
+                "<white>" + layout.label,
+                "",
+                "<yellow>Klicken: Anordnung wechseln"));
+        inv.setItem(layout.doneSlot(), Util.item(Material.LIME_DYE, "<green><bold>Fertig"));
+    }
+
+    private void saveToData() {
+        for (int i = 0; i < NpcData.TRADES; i++) {
+            ItemStack in = inv.getItem(layout.in(i));
+            ItemStack out = inv.getItem(layout.out(i));
+            d.inputs[i] = in == null ? null : in.clone();
+            d.outputs[i] = out == null ? null : out.clone();
+        }
     }
 
     @Override
@@ -56,12 +83,20 @@ public final class TraderEditor extends Gui {
         }
         e.setCancelled(true);
         int slot = e.getSlot();
+        Player p = (Player) e.getWhoClicked();
 
-        if (slot == 26) {
-            new EditMenu(plugin, d).open((Player) e.getWhoClicked());
+        if (slot == layout.doneSlot()) {
+            new EditMenu(plugin, d).open(p);
             return;
         }
-        if (slot >= 18) return;
+        if (slot == layout.layoutSlot()) {
+            saveToData();
+            d.layout = layout.next();
+            plugin.manager().refresh(d);
+            new TraderEditor(plugin, d).open(p);
+            return;
+        }
+        if (!editable.contains(slot)) return;
 
         ItemStack cursor = e.getCursor();
         ItemStack current = inv.getItem(slot);
@@ -77,8 +112,9 @@ public final class TraderEditor extends Gui {
                 n.setAmount(Math.min(n.getMaxStackSize(), n.getAmount() + 1));
                 inv.setItem(slot, n);
             } else if (c == ClickType.RIGHT) {
-                if (current.getAmount() <= 1) inv.setItem(slot, null);
-                else {
+                if (current.getAmount() <= 1) {
+                    inv.setItem(slot, null);
+                } else {
                     ItemStack n = current.clone();
                     n.setAmount(n.getAmount() - 1);
                     inv.setItem(slot, n);
@@ -99,12 +135,7 @@ public final class TraderEditor extends Gui {
 
     @Override
     public void onClose(InventoryCloseEvent e) {
-        for (int i = 0; i < NpcData.TRADES; i++) {
-            ItemStack in = inv.getItem(i);
-            ItemStack out = inv.getItem(i + 9);
-            d.inputs[i] = in == null ? null : in.clone();
-            d.outputs[i] = out == null ? null : out.clone();
-        }
+        saveToData();
         plugin.manager().refresh(d);
     }
 }

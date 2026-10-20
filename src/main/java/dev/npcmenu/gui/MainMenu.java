@@ -24,7 +24,15 @@ public final class MainMenu extends Gui {
             int idx = start + i;
             if (idx >= list.size()) break;
             NpcData d = list.get(idx);
-            set(i, head(d), e -> new EditMenu(plugin, d).open((Player) e.getWhoClicked()));
+            set(i, head(d), e -> {
+                Player p = (Player) e.getWhoClicked();
+                if (e.isRightClick() && d.spawned()) {
+                    p.closeInventory();
+                    plugin.manager().teleportTo(p, d);
+                } else {
+                    new EditMenu(plugin, d).open(p);
+                }
+            });
         }
 
         for (int i = 45; i < 54; i++) set(i, Util.filler(), null);
@@ -54,7 +62,8 @@ public final class MainMenu extends Gui {
                 "<gray>Typ: <white>" + d.type.label,
                 "<gray>Skin: <white>" + d.skin,
                 "",
-                "<yellow>Klicken zum Bearbeiten");
+                "<yellow>Linksklick: bearbeiten",
+                "<yellow>Rechtsklick: zum NPC teleportieren");
         // Kopf-Profil auf das benannte Item uebertragen
         named.setItemMeta(mergeSkull(named, meta));
         return named;
