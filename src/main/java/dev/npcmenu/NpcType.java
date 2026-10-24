@@ -8,7 +8,8 @@ public enum NpcType {
     COMMAND(Material.COMMAND_BLOCK, "Befehl ausfuehren"),
     MESSAGE(Material.WRITABLE_BOOK, "Nachricht"),
     SERVER(Material.COMPASS, "Server wechseln (Proxy)"),
-    SALVAGE(Material.GRINDSTONE, "Verschrotter");
+    SALVAGE(Material.GRINDSTONE, "Verschrotter"),
+    WORKER(Material.IRON_PICKAXE, "Arbeiter / Minion");
 
     public final Material icon;
     public final String label;

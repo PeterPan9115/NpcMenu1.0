@@ -116,6 +116,9 @@ public final class EditMenu extends Gui {
             case SALVAGE -> new String[]{"<gray>Rueckgabe: <white>" + d.salvagePercent + "%",
                     "<gray>Haltbarkeit: <white>" + (d.salvageDurability ? "zaehlt" : "egal"),
                     "", "<yellow>Klicken zum Oeffnen"};
+            case WORKER -> new String[]{"<gray>Max. Dauer: <white>" + Util.duration(d.workerMaxMinutes * 60000L),
+                    "<gray>Geschwindigkeit: <white>" + d.workerSpeed + "%",
+                    "", "<yellow>Klicken zum Oeffnen"};
             case SERVER -> new String[]{"<gray>Server: <white>" + (d.server.isBlank() ? "-" : d.server),
                     "", "<yellow>Klicken: Servernamen eingeben"};
         };
@@ -132,6 +135,7 @@ public final class EditMenu extends Gui {
             case TELEPORT -> new TeleportMenu(plugin, d).open(p);
             case COMMAND -> new CommandMenu(plugin, d).open(p);
             case SALVAGE -> new SalvageConfigMenu(plugin, d).open(p);
+            case WORKER -> new WorkerConfigMenu(plugin, d).open(p);
             case MESSAGE -> plugin.chat().ask(p,
                     "<yellow>Gib die <white>Nachricht<yellow> ein (%player% = Spielername):",
                     s -> {

@@ -53,6 +53,10 @@ public class NpcData {
     public int salvagePercent = 100;
     public boolean salvageDurability = true;
 
+    // Arbeiter
+    public int workerMaxMinutes = 1440;
+    public int workerSpeed = 100;
+
     // Befehl
     public String command = "";
     public boolean asConsole = false;
@@ -97,6 +101,8 @@ public class NpcData {
         s.set("tpWait", tpWait);
         s.set("salvagePercent", salvagePercent);
         s.set("salvageDurability", salvageDurability);
+        s.set("workerMaxMinutes", workerMaxMinutes);
+        s.set("workerSpeed", workerSpeed);
         s.set("command", command);
         s.set("console", asConsole);
         s.set("message", message);
@@ -138,6 +144,8 @@ public class NpcData {
         d.tpWait = s.getInt("tpWait", 0);
         d.salvagePercent = s.getInt("salvagePercent", 100);
         d.salvageDurability = s.getBoolean("salvageDurability", true);
+        d.workerMaxMinutes = s.getInt("workerMaxMinutes", 1440);
+        d.workerSpeed = s.getInt("workerSpeed", 100);
         d.command = s.getString("command", "");
         d.asConsole = s.getBoolean("console", false);
         d.message = s.getString("message", "<gray>Hallo!");

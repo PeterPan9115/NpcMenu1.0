@@ -42,6 +42,10 @@ public final class NpcManager {
         this.usageFile = new File(plugin.getDataFolder(), "usage.yml");
     }
 
+    public NpcData get(String id) {
+        return npcs.get(id);
+    }
+
     public Collection<NpcData> all() {
         return npcs.values();
     }
@@ -215,6 +219,7 @@ public final class NpcManager {
         if (m != null) m.remove();
         npcs.remove(d.id);
         usage.keySet().removeIf(k -> k.startsWith(d.id + ";"));
+        plugin.workers().removeNpc(d.id);
         save();
     }
 

@@ -4,3 +4,13 @@
 #   - NETHERITE_INGOT
 #   - BEACON
 salvage-blacklist: []
+
+# --- Arbeiter / Minions ---
+# Standard-Rate (Items pro Stunde bei 100% Geschwindigkeit) fuer Rohstoffe, die nicht in der
+# eingebauten Liste stehen. Gecraftete Items koennen nicht gefarmt werden.
+worker-default-rate: 100
+# Eigene Raten pro Item (Items pro Stunde, 0 = nicht farmbar), z.B.:
+# worker-rates:
+#   DIAMOND: 5
+#   COBBLESTONE: 2000
+worker-rates: {}
