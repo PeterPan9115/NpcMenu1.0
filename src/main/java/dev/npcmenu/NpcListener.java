@@ -3,6 +3,7 @@ package dev.npcmenu;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import dev.npcmenu.gui.EditMenu;
+import dev.npcmenu.gui.SalvageMenu;
 import dev.npcmenu.gui.ShopMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -53,6 +54,7 @@ public final class NpcListener implements Listener {
         switch (d.type) {
             case SHOP -> new ShopMenu(plugin, d, p, 0).open(p);
             case TELEPORT -> teleport(p, d);
+            case SALVAGE -> new SalvageMenu(plugin, d).open(p);
             case COMMAND -> {
                 if (d.command.isBlank()) return;
                 String c = d.command.replace("%player%", p.getName());

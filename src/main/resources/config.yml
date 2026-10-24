@@ -1,0 +1,6 @@
+# Materialien, die der Verschrotter NICHT annehmen soll (Namen aus der Material-Liste).
+# Beispiel:
+# salvage-blacklist:
+#   - NETHERITE_INGOT
+#   - BEACON
+salvage-blacklist: []

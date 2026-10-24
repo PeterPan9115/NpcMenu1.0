@@ -49,6 +49,10 @@ public class NpcData {
     public int tpCostXp = 0;
     public int tpWait = 0;
 
+    // Verschrotter
+    public int salvagePercent = 100;
+    public boolean salvageDurability = true;
+
     // Befehl
     public String command = "";
     public boolean asConsole = false;
@@ -91,6 +95,8 @@ public class NpcData {
         s.set("tpCostItem", tpCostItem);
         s.set("tpCostXp", tpCostXp);
         s.set("tpWait", tpWait);
+        s.set("salvagePercent", salvagePercent);
+        s.set("salvageDurability", salvageDurability);
         s.set("command", command);
         s.set("console", asConsole);
         s.set("message", message);
@@ -130,6 +136,8 @@ public class NpcData {
         d.tpCostItem = s.getItemStack("tpCostItem");
         d.tpCostXp = s.getInt("tpCostXp", 0);
         d.tpWait = s.getInt("tpWait", 0);
+        d.salvagePercent = s.getInt("salvagePercent", 100);
+        d.salvageDurability = s.getBoolean("salvageDurability", true);
         d.command = s.getString("command", "");
         d.asConsole = s.getBoolean("console", false);
         d.message = s.getString("message", "<gray>Hallo!");

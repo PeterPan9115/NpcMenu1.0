@@ -10,6 +10,7 @@ public final class NpcMenu extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
         manager = new NpcManager(this);
         manager.load();
         chat = new ChatInput(this);

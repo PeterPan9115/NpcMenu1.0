@@ -7,7 +7,8 @@ public enum NpcType {
     TELEPORT(Material.ENDER_PEARL, "Teleporter"),
     COMMAND(Material.COMMAND_BLOCK, "Befehl ausfuehren"),
     MESSAGE(Material.WRITABLE_BOOK, "Nachricht"),
-    SERVER(Material.COMPASS, "Server wechseln (Proxy)");
+    SERVER(Material.COMPASS, "Server wechseln (Proxy)"),
+    SALVAGE(Material.GRINDSTONE, "Verschrotter");
 
     public final Material icon;
     public final String label;
