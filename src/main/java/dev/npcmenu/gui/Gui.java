@@ -4,6 +4,7 @@ import dev.npcmenu.NpcMenu;
 import dev.npcmenu.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -49,10 +50,25 @@ public abstract class Gui implements InventoryHolder {
     }
 
     public void onClick(InventoryClickEvent e) {
+        Inventory clicked = e.getClickedInventory();
+        if (clicked == null) {
+            e.setCancelled(true);
+            return;
+        }
+        if (clicked != inv) {
+            // Eigenes Inventar: Items duerfen aufgenommen werden (fuer die Auswahl per Cursor),
+            // aber es darf nichts ins Menue geschoben oder eingesammelt werden.
+            InventoryAction a = e.getAction();
+            if (e.isShiftClick()
+                    || a == InventoryAction.MOVE_TO_OTHER_INVENTORY
+                    || a == InventoryAction.COLLECT_TO_CURSOR) {
+                e.setCancelled(true);
+            }
+            return;
+        }
         e.setCancelled(true);
-        if (e.getClickedInventory() != inv) return;
-        Consumer<InventoryClickEvent> a = actions.get(e.getSlot());
-        if (a != null) a.accept(e);
+        Consumer<InventoryClickEvent> act = actions.get(e.getSlot());
+        if (act != null) act.accept(e);
     }
 
     public void onDrag(InventoryDragEvent e) {
